@@ -64,17 +64,3 @@ def run():
 
 if __name__ == "__main__":
     run()
-
-
-# owm = "https://history.openweathermap.org/data/2.5/history/city?lat=10.78&lon=106.6&type=hour&start=1704270369&end=1704284730&appid=6a7484d49df3806840e9a0f8ae2e409e"
-
-
-# from geopy.geocoders import Nominatim
-
-# geolocator = Nominatim(user_agent="myapplication")
-# x = (16.840615, 112.338652)
-# location = geolocator.reverse(
-#     x, exactly_one=True, language="en", namedetails=True, addressdetails=True
-# )
-# # print(location.raw)
-# print(f"""Country Name: {location.raw['address']}""")
