@@ -1,11 +1,14 @@
 import datetime
 import time
-
 import requests
 import pymongo
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
-server_uri = "mongodb+srv://admin:PW0ysJYzBz2MTCCt@hd.4znyikg.mongodb.net/"
+server_uri = os.getenv('MONGO_URI')
+ACCESS_TOKEN = os.getenv('OWM_TOKEN')
 client = pymongo.MongoClient(server_uri)
 db_name = "raw"
 collection_name = "weather"
@@ -14,7 +17,6 @@ collection = client[db_name][collection_name]
 
 
 def get_weather(area):
-    ACCESS_TOKEN = "7a2bc70137a9acce1f36f307f8ebd2f8"
     api_url = "https://history.openweathermap.org/data/2.5/history/city?lat={lat}&lon={lon}&appid={token}"
     geo_url = "http://api.openweathermap.org/geo/1.0/direct?q={area},VN&limit=1&appid={token}"
 
