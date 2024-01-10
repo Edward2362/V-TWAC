@@ -6,6 +6,7 @@ import os
 from pymongo import UpdateOne
 
 SLEEP_TIME = int(os.environ.get("SLEEP_TIME", 1800))
+TOMTOM_KEY = os.environ.get("TOMTOM")
 CLIENT = pymongo.MongoClient(os.environ.get("MONGO_COMPASS"))
 RAW_DB = CLIENT.raw
 TRAFFIC_COLLECTION = RAW_DB.traffic
@@ -13,7 +14,8 @@ TRAFFIC_COLLECTION = RAW_DB.traffic
 
 async def get_incidents(minLon, minLat, maxLon, maxLat):
     traffic = (
-        "https://api.tomtom.com/traffic/services/5/incidentDetails?key=xbOzQloQp2Z0WBkYQaeencnEpPsXJMTU&fields={incidents{type,geometry{type,coordinates},properties{id,iconCategory,magnitudeOfDelay,events{description,code,iconCategory},startTime,endTime,from,to,length,delay,roadNumbers,timeValidity,probabilityOfOccurrence,numberOfReports,lastReportTime}}}&language=en-GB&t=1111&timeValidityFilter=present&"
+        f"https://api.tomtom.com/traffic/services/5/incidentDetails?key={TOMTOM_KEY}"
+        + "&fields={incidents{type,geometry{type,coordinates},properties{id,iconCategory,magnitudeOfDelay,events{description,code,iconCategory},startTime,endTime,from,to,length,delay,roadNumbers,timeValidity,probabilityOfOccurrence,numberOfReports,lastReportTime}}}&language=en-GB&t=1111&timeValidityFilter=present&"
         + f"bbox={minLon},{minLat},{maxLon},{maxLat}&categoryFilter=1,6"
     )
     res = requests.get(traffic)
