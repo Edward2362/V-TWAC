@@ -108,7 +108,7 @@ def run():
             count += 1
             cleaned_incidents.remove(None)
         print(
-            f"Clean clean none: cleaned length={len(cleaned_incidents)}, none={count}\n"
+            f"Clean none: cleaned length={len(cleaned_incidents)}, none={count}\n"
         )
 
         upsert_incident_cp_requests = get_upsert_incident_requests(raw_incidents)
