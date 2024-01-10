@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  tomtom:
+    container_name: tomtom_incidents
+    build: .
+    env_file: ./.env
+    environment:
+      SLEEP_TIME: 1800
+    
