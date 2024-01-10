@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  owm:
+    container_name: openweathermap_etl
+    build: .
+    env_file: ./.env
+    environment:
+      SLEEP_TIME: 86400
