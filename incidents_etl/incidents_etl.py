@@ -27,8 +27,6 @@ def get_district_key(address):
         value = address[key].lower()
         if "district" in value or "quận" in value:
             result = key
-    if result == "":
-        print(f"no disctrict: {address}")
     return result
 
 
