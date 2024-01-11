@@ -20,7 +20,10 @@ def get_weather(coor):
     lat, lon = coor
     today = datetime.datetime.now().replace(hour=16, minute=0, second=0) - datetime.timedelta(hours=2)
     yesterday = today - datetime.timedelta(days=1)
-    api_url = f"https://api.weatherbit.io/v2.0/history/hourly?lat={lat}&lon={lon}&start_date={str(yesterday.strftime("%Y-%m-%d:%H"))}&end_date={str(today.strftime("%Y-%m-%d:%H"))}&tz=local&key={ACCESS_TOKEN}"
+    # api_url = f"https://api.weatherbit.io/v2.0/history/hourly?lat={lat}&lon={lon}&start_date={str(yesterday.strftime("%Y-%m-%d:%H"))}&end_date={str(today.strftime("%Y-%m-%d:%H"))}&tz=local&key={ACCESS_TOKEN}"
+
+    api_url = f"https://api.weatherbit.io/v2.0/history/hourly?lat={lat}&lon={lon}&start_date={yesterday.strftime('%Y-%m-%d:%H')}&end_date={today.strftime('%Y-%m-%d:%H')}&tz=local&key={ACCESS_TOKEN}"
+
     # api_url = f"https://api.weatherbit.io/v2.0/history/hourly?lat={lat}&lon={lon}&start_date=2024-01-05&end_date={str(today.strftime("%Y-%m-%d:%H"))}&tz=local&key={ACCESS_TOKEN}"
 
     response = requests.get(api_url)

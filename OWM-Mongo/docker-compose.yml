@@ -4,3 +4,5 @@ services:
   openweathermap:
     container_name: openweathermap
     build: .
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
