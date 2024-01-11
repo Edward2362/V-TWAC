@@ -2,6 +2,7 @@ import pymongo
 import time
 import os
 import multiprocessing
+from unidecode import unidecode
 from pymongo import DeleteOne, UpdateOne
 from geopy.geocoders import Nominatim
 
@@ -18,14 +19,36 @@ TRAFFIC_CLEAN_COLLECTION = CLEAN_DB.traffic
 CHECKPOINT_DB = CLIENT.checkpoint
 TRAFFIC_CP_COLLECTION = CHECKPOINT_DB.checkpoints
 
-CITES_ISO = ["VN-HN", "VN-HP", "VN-DN", "VN-SG", "VN-CT"]
+CITES_ISO = {
+    "VN-HN": "Ha Noi",
+    "VN-HP": "Hai Phong",
+    "VN-DN": "Da Nang",
+    "VN-SG": "Ho Chi Minh City",
+    "VN-CT": "Can Tho",
+}
+
+
+def extract_name(district):
+    district_lowercase = district.lower()
+    if (
+        len(district_lowercase.split()) == 2
+        and district_lowercase.split()[1].isnumeric()
+    ):
+        return district_lowercase
+    elif "quận" in district_lowercase:
+        return district_lowercase.replace("quận", "").strip()
+    return district_lowercase.replace("district", "").strip()
 
 
 def get_district_key(address):
     result = ""
     for key in address.keys():
         value = address[key].lower()
-        if "district" in value or "quận" in value:
+        if (
+            ("district" in value or "quận" in value)
+            and "đường" not in value
+            and "street" not in value
+        ):
             result = key
     return result
 
@@ -45,10 +68,13 @@ def covert_coordinates(coordinates):
             and district_key != ""
             and address["ISO3166-2-lvl4"] in CITES_ISO
         ):
-            return (
-                location.raw["address"][district_key],
-                location.raw["address"]["city"],
+            district = unidecode(extract_name(location.raw["address"][district_key]))
+            city = (
+                CITES_ISO.get(
+                    location.raw["address"]["ISO3166-2-lvl4"],
+                ),
             )
+            return (district, city)
     except:
         print(f"Error in address: {address}")
         return None, None
@@ -97,7 +123,7 @@ def run():
     pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
 
     while True:
-        raw_incidents = list(TRAFFIC_RAW_COLLECTION.find())
+        raw_incidents = list(TRAFFIC_RAW_COLLECTION.find())[:100]
         print(f"Raw length={len(raw_incidents)}")
         cleaned_incidents = pool.map(clean_raw_data, raw_incidents)
         print("\nFinished Cleaning\n")
@@ -107,9 +133,7 @@ def run():
         while None in cleaned_incidents:
             count += 1
             cleaned_incidents.remove(None)
-        print(
-            f"Clean none: cleaned length={len(cleaned_incidents)}, none={count}\n"
-        )
+        print(f"Clean none: cleaned length={len(cleaned_incidents)}, none={count}\n")
 
         upsert_incident_cp_requests = get_upsert_incident_requests(raw_incidents)
         upsert_cleaned_incident_requests = get_upsert_incident_requests(
