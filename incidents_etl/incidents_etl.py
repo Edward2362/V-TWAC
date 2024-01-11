@@ -123,7 +123,7 @@ def run():
     pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
 
     while True:
-        raw_incidents = list(TRAFFIC_RAW_COLLECTION.find())[:100]
+        raw_incidents = list(TRAFFIC_RAW_COLLECTION.find())
         print(f"Raw length={len(raw_incidents)}")
         cleaned_incidents = pool.map(clean_raw_data, raw_incidents)
         print("\nFinished Cleaning\n")
