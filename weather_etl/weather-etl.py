@@ -12,18 +12,21 @@ CLEAN_WEATHER_COLLECTION = CLIENT.clean.weather
 def extract_data(raw_collection, clean_collection):
     try:
         # Extract the latest timestamp from the clean database
-        latest_document = clean_collection.find_one(sort=[("dt", -1)])
+        latest_document = clean_collection.find_one(sort=[("ts", -1)])
 
+        # Get the latest timestamp from the clean database
         if latest_document is not None:
-            latest_timestamp = pd.to_datetime(latest_document.get('dt')).timestamp()
+            latest_timestamp = pd.to_datetime(latest_document.get('ts')).timestamp()
         else:
             latest_timestamp = None
 
+        # Extract data from the raw database
         if latest_timestamp is None:
             weather_raw_df = pd.DataFrame(list(raw_collection.find()))
         else:
-            weather_raw_df = pd.DataFrame(list(raw_collection.find({'dt': {'$gt': latest_timestamp}})))
+            weather_raw_df = pd.DataFrame(list(raw_collection.find({'ts': {'$gt': latest_timestamp}})))
             
+        # Check if there is new data to process
         if weather_raw_df.empty:
             print('No new data to process')
             return None
@@ -36,31 +39,15 @@ def extract_data(raw_collection, clean_collection):
 
 def transform_data(weather_raw_df): 
     # flatten column
-    main_flattened = pd.json_normalize(weather_raw_df['main']).add_prefix('main_')
-    wind_flattened = pd.json_normalize(weather_raw_df['wind']).add_prefix('wind_')
-    clouds_flattened = pd.json_normalize(weather_raw_df['clouds']).add_prefix('clouds_')
     weather_flattened = pd.json_normalize(weather_raw_df['weather']).add_prefix('weather_')
     
-    flattened_weather_df = pd.concat([weather_raw_df, main_flattened, wind_flattened, clouds_flattened, weather_flattened], axis=1)
-
-    # get max length of weather column
-    max_weather_arr_len = weather_raw_df['weather'].apply(lambda x: len(x) if isinstance(x, list) else 0).max()
-    weather_arr = []
-    for i in range(max_weather_arr_len):
-        weather_arr.append(f'weather_{i}')
-    
-    # flatten the dictionary inside weather column
-    for weather in weather_arr:
-        flattened_column = pd.json_normalize(flattened_weather_df[weather]).add_prefix(f'{weather}_')
-        flattened_weather_df = pd.concat([flattened_weather_df, flattened_column], axis=1)
-        
-    cols_to_drop = ['main', 'wind', 'clouds', 'weather'] + weather_arr
+    flattened_weather_df = pd.concat([weather_raw_df, weather_flattened], axis=1)
 
     # drop unnecessary columns
-    flattened_weather_df.drop(columns=cols_to_drop, inplace=True)
+    flattened_weather_df.drop(columns=['weather'], inplace=True)
     
-    # convert dt column to datetime format
-    flattened_weather_df['dt'] = pd.to_datetime(flattened_weather_df['dt'], unit='s')
+    # convert ts column to datetime format
+    flattened_weather_df['ts'] = pd.to_datetime(flattened_weather_df['ts'])
 
     return flattened_weather_df
 
@@ -74,6 +61,7 @@ def run():
     while True:
         # Extract data from the raw databse
         weather_raw_df = extract_data(RAW_WEATHER_COLLECTION, CLEAN_WEATHER_COLLECTION)
+        print(weather_raw_df)
 
         if weather_raw_df is not None:
             weather_df = transform_data(weather_raw_df)
