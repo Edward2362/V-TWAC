@@ -98,7 +98,6 @@ def clean_raw_data(document):
         "city": city,
         "district": district,
     }
-    print(cleaned_incident)
     return cleaned_incident
 
 
