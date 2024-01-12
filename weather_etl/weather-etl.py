@@ -16,7 +16,7 @@ def extract_data(raw_collection, clean_collection):
 
         # Get the latest timestamp from the clean database
         if latest_document is not None:
-            latest_timestamp = pd.to_datetime(latest_document.get('ts'))
+            latest_timestamp = pd.to_datetime(latest_document.get('ts')).timestamp()
         else:
             latest_timestamp = None
 
@@ -47,7 +47,7 @@ def transform_data(weather_raw_df):
     flattened_weather_df.drop(columns=['weather'], inplace=True)
     
     # convert ts column to datetime format
-    flattened_weather_df['ts'] = pd.to_datetime(flattened_weather_df['ts'])
+    flattened_weather_df['ts'] = pd.to_datetime(flattened_weather_df['ts'], unit='s')
 
     return flattened_weather_df
 
