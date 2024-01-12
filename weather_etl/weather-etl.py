@@ -47,7 +47,7 @@ def transform_data(weather_raw_df):
     flattened_weather_df.drop(columns=['weather'], inplace=True)
     
     # convert ts column to datetime format
-    flattened_weather_df['ts'] = pd.to_datetime(flattened_weather_df['ts'])
+    flattened_weather_df['ts'] = pd.to_datetime(flattened_weather_df['ts'], unit='s')
 
     return flattened_weather_df
 
