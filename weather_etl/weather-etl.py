@@ -16,7 +16,7 @@ def extract_data(raw_collection, clean_collection):
 
         # Get the latest timestamp from the clean database
         if latest_document is not None:
-            latest_timestamp = pd.to_datetime(latest_document.get('ts')).timestamp()
+            latest_timestamp = pd.to_datetime(latest_document.get('ts'))
         else:
             latest_timestamp = None
 
