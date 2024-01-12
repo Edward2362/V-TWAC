@@ -69,11 +69,7 @@ def covert_coordinates(coordinates):
             and address["ISO3166-2-lvl4"] in CITES_ISO
         ):
             district = unidecode(extract_name(location.raw["address"][district_key]))
-            city = (
-                CITES_ISO.get(
-                    location.raw["address"]["ISO3166-2-lvl4"],
-                ),
-            )
+            city = CITES_ISO.get(location.raw["address"]["ISO3166-2-lvl4"])
             return (district, city)
     except:
         print(f"Error in address: {address}")
