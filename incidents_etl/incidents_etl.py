@@ -5,6 +5,8 @@ import multiprocessing
 from unidecode import unidecode
 from pymongo import DeleteOne, UpdateOne
 from geopy.geocoders import Nominatim
+from datetime import datetime
+import pytz
 
 
 SLEEP_TIME = int(os.environ.get("SLEEP_TIME", 21600))
@@ -77,15 +79,29 @@ def covert_coordinates(coordinates):
     return None, None
 
 
+def convert_utl_to_local_gmt(iso8601_utc_time):
+    utc_time = datetime.strptime(iso8601_utc_time, "%Y-%m-%dT%H:%M:%SZ").replace(
+        tzinfo=pytz.UTC
+    )
+
+    # Define the GMT+7 timezone
+    gmt_plus_7 = pytz.timezone("Asia/Ho_Chi_Minh")
+
+    # Convert UTC time to GMT+7
+    gmt_plus_7_time = str(utc_time.astimezone(gmt_plus_7))
+
+    return gmt_plus_7_time
+
+
 def clean_raw_data(document):
     district, city = covert_coordinates(document["geometry"]["coordinates"][0])
-    if not city:
+    if not city and len(document["properties"]["events"]) == 1:
         return
     cleaned_incident = {
         "_id": document["_id"],
         "iconCategory": document["properties"]["iconCategory"],
-        "startTime": document["properties"]["startTime"],
-        "endTime": document["properties"]["endTime"],
+        "startTime": convert_utl_to_local_gmt(document["properties"]["startTime"]),
+        "endTime": convert_utl_to_local_gmt(document["properties"]["endTime"]),
         "length": document["properties"]["length"],
         "delay": document["properties"]["delay"],
         "eventCode": document["properties"]["events"][0]["code"],
@@ -94,6 +110,7 @@ def clean_raw_data(document):
         "city": city,
         "district": district,
     }
+    print(cleaned_incident)
     return cleaned_incident
 
 
