@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  combination:
+    container_name: combination_etl
+    build: .
+    env_file: ./.env
+    environment:
+      SLEEP_TIME: 21600
+    
