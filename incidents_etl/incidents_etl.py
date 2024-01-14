@@ -95,7 +95,7 @@ def convert_utl_to_local_gmt(iso8601_utc_time):
 
 def clean_raw_data(document):
     district, city = covert_coordinates(document["geometry"]["coordinates"][0])
-    if not city and len(document["properties"]["events"]) == 1:
+    if not city or len(document["properties"]["events"]) > 1:
         return
     cleaned_incident = {
         "_id": document["_id"],
@@ -110,7 +110,6 @@ def clean_raw_data(document):
         "city": city,
         "district": district,
     }
-    print(cleaned_incident)
     return cleaned_incident
 
 
