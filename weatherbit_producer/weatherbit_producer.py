@@ -7,15 +7,15 @@ import os
 
 load_dotenv()
 
-server_uri = os.getenv('MONGO_URI')
+#get varible from .env file
+SERVER_URI = os.getenv('MONGO_URI')
 ACCESS_TOKEN = os.getenv('WB_TOKEN')
-client = pymongo.MongoClient(server_uri)
-db_name = "raw"
-collection_name = "weather"
 
-collection = client[db_name][collection_name]
+CLIENT = pymongo.MongoClient(SERVER_URI)
 
+COLLECTION = CLIENT.raw.weather
 
+# using lat and lon in coor put in to the api and call the request
 def get_weather(coor):
     lat, lon = coor
     today = datetime.datetime.now().replace(hour=16, minute=0, second=0) - datetime.timedelta(hours=2)
@@ -29,8 +29,9 @@ def get_weather(coor):
     print(result)
     return result['data']
 
-
+# loop through 5 city and call get_weather then insert into raw weathehr collection
 def insert_data():
+    # 5 cities with it coordinates
     city_coor = {
         "Ha Noi": (21.0294498, 105.8544441),
         "Hai Phong": (20.858864, 106.6749591),
@@ -42,11 +43,12 @@ def insert_data():
     for city in city_coor:
         response = get_weather(city_coor[city])
         for report in response:
+            # pack the report with the city location then insert into raw weather
             report['location'] = city
             print(report)
-            collection.insert_one(report)
+            COLLECTION.insert_one(report)
 
-
+# sleep and show count until the next time the api will be call again
 def pause():
     next_time = datetime.datetime.now().replace(hour=16, minute=0, second=0) + datetime.timedelta(days=1)
     print(f"==========================================================================================================")

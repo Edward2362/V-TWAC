@@ -1,8 +1,8 @@
 version: "3"
 
 services:
-  openweathermap:
-    container_name: openweathermap
+  weatherbit:
+    container_name: weatherbit
     build: .
     environment:
       - TZ=Asia/Ho_Chi_Minh

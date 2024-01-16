@@ -6,4 +6,5 @@ services:
     build: .
     env_file: ./.env
     environment:
-      SLEEP_TIME: 86400
+    - TZ=Asia/Ho_Chi_Minh
+
