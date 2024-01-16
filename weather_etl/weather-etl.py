@@ -1,9 +1,9 @@
 import pandas as pd
+import datetime
 import time
 import os
 from pymongo import MongoClient
 
-SLEEP_TIME = int(os.environ.get("SLEEP_TIME", 86400))
 CLIENT = MongoClient(os.environ.get("MONGO_COMPASS"))
 RAW_WEATHER_COLLECTION = CLIENT.raw.weather
 CLEAN_WEATHER_COLLECTION = CLIENT.clean.weather
@@ -56,9 +56,20 @@ def load_data(df, collection):
     weather_data = df.to_dict(orient='records')
     collection.insert_many(weather_data)
     
+# sleep and show count until the next time the api will be call again
+def pause():
+    next_time = datetime.datetime.now().replace(hour=16, minute=30, second=0) + datetime.timedelta(days=1)
+    print(f"==========================================================================================================")
+    print(f"Next API call at: {next_time}")
+
+    while (datetime.datetime.now()) < next_time:
+        current = next_time - datetime.datetime.now()
+        print(f"   {current.seconds} seconds left to next call")
+        time.sleep(60)
 
 def run():
     while True:
+        pause()
         # Extract data from the raw databse
         weather_raw_df = extract_data(RAW_WEATHER_COLLECTION, CLEAN_WEATHER_COLLECTION)
         print(weather_raw_df)
@@ -66,7 +77,6 @@ def run():
         if weather_raw_df is not None:
             weather_df = transform_data(weather_raw_df)
             load_data(weather_df, CLEAN_WEATHER_COLLECTION)
-        time.sleep(SLEEP_TIME)
     
 
 if __name__ == "__main__":
