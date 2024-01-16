@@ -57,15 +57,16 @@ def run():
         )
         upsert_incident_requests = get_upsert_incident_requests(incidents)
         print(f"Sending new incidents in {city} to raw db\n")
-        if (len(upsert_incident_requests) > 0):
+        if len(upsert_incident_requests) > 0:
             TRAFFIC_COLLECTION.bulk_write(upsert_incident_requests)
             print("New incidents sent\n")
             time.sleep(repeat_request)
             print("Waking up!\n")
-            
+
         else:
             print(f"No new incidents in {city}")
         iterator += 1
+
 
 if __name__ == "__main__":
     run()

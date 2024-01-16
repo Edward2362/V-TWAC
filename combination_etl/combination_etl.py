@@ -14,7 +14,7 @@ COMBINATION_DB = CLIENT.combination
 TRAFFIC_WEATHER_COMB_COLLECTION = COMBINATION_DB.traffic_weather_combination
 
 
-def expand_incidents(documents):
+def split_incidents(documents):
     rows = []
     for document in documents:
         start = pandas.to_datetime(document["startTime"])
@@ -70,7 +70,7 @@ def run():
         cleaned_weather = list(TRAFFIC_WEATHER_COLLECTION.find())
 
         # Split incidents into multiple incidents depends on timestamps between start time and end time
-        expanded_cleaned_incidents = expand_incidents(cleaned_incidents)
+        expanded_cleaned_incidents = split_incidents(cleaned_incidents)
         incidents_df = pandas.DataFrame(expanded_cleaned_incidents).drop(
             columns=["startTime", "endTime"]
         )
@@ -113,9 +113,9 @@ def run():
         )
 
         print("Up data to combination collection")
-        # drop existed data in collection
+        # Drop existed data in collection
         TRAFFIC_WEATHER_COMB_COLLECTION.drop()
-        # drop _id column so that Mongo can generate new _id
+        # Drop _id column so that Mongo can generate new _id
         dict_comb = aggregated_df.drop(columns=["_id"]).to_dict(orient="records")
         TRAFFIC_WEATHER_COMB_COLLECTION.insert_many(dict_comb)
         print(f"Uploaded {len(dict_comb)} data")
