@@ -65,6 +65,7 @@ def covert_coordinates(coordinates):
     district_key = get_district_key(address)
 
     try:
+        # If there are no "city" or "ISO3166-2-lvl4" property or district_key is null, return None, None
         if (
             "city" in address
             and district_key != ""

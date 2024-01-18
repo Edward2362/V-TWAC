@@ -32,6 +32,7 @@ def split_incidents(documents):
 
 
 def fill_timestamp(df):
+    # Converting time to date time object
     df["date"] = pandas.to_datetime(df["dt"]).dt.date
     df["time"] = pandas.to_datetime(df["dt"]).dt.time
     districts = df["district"].unique()
