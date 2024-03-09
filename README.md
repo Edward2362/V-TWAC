@@ -1,11 +1,41 @@
-# V-TWAC
+# VICTRA 
 
-Vietnamese Traffic weather analysis of correlation
+Vietnamese Interconnected Climate & Traffic Relations Assessment
 
-## Except for training_model_and_deploy folder, which has its own README file, other folders are docker containers. Below are steps to run the pipeline correctly:
+---
 
-1. Running weather producer: docker-compose -f "weatherbit_producer/docker-compose.yml"
-2. Running weather producer: docker-compose -f "incidents_producer/docker-compose.yml"
-3. Running weather producer: docker-compose -f "weatherbit_etl/docker-compose.yml"
-4. Running weather producer: docker-compose -f "incidents_etl/docker-compose.yml"
-5. Running weather producer: docker-compose -f "combination_etl/docker-compose.yml"
+## The assessment is carried out @RMIT-VN by:
+
+Nguyen Vinh Quang – S3817788 
+
+Tran Nam Thai - S3891890 
+
+Hoan Minh Khoi – S3822041 
+
+Pham Anh Thu - S3878246 
+
+Nguyen Quoc Thang – S3796613 
+
+---
+
+## Initiate date pipeline
+
+** Except for the final model's `training_model_and_deploy` folder, which has its own `README.md` file, other folders are docker containers. Below are steps to run the pipeline correctly: **
+
+
+```bash
+# Weather-bit producer
+docker-compose -f "weatherbit_producer/docker-compose.yml"
+
+# Traffice incidents producer
+docker-compose -f "incidents_producer/docker-compose.yml"
+
+# Weather ETL
+docker-compose -f "weatherbit_etl/docker-compose.yml"
+
+# Traffic ETL
+docker-compose -f "incidents_etl/docker-compose.yml"
+
+# Weather - Traffic Combination ETL
+docker-compose -f "combination_etl/docker-compose.yml"
+```
